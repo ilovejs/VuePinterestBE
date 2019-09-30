@@ -9,7 +9,7 @@ python app.py
 
 ## Run
 
-## Requirement anaylsis
+## Requirement Analysis
 
 We will like you to develop a single image gallery website using vue and flask, 
 It require to load images from database. 
@@ -23,7 +23,8 @@ It require to load images from database.
 2. Slider that resize image
     Waterfall display need to support resize all images using slider
 
-3. Responsive by margin:
-    Automaticly adjust number of rows when margin is too large/small
+3. Re-order when image overlap after slider resizing:
+    Automatically adjust number of rows when image size is too large/small
+    
 4. Responsive by window:
     Adjust number of rows when browser window get smaller

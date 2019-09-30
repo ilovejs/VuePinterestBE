@@ -3,9 +3,11 @@
  - Run in Python 3.7 or your virtual environment
  - Flask 1.1.1 (latest) with Flask-cors installed
  
-cd InfiniteScrollPhoto
-pip install -r requirement.txt
-python app.py
+    cd InfiniteScrollPhoto
+    pip install -r requirement.txt
+    python app.py OR bash run.sh
+
+* If using PyCharm, IMG_ROOT have to be absolute system location. 
 
 ## Requirement Analysis
 

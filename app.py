@@ -22,7 +22,7 @@ dictConfig({
 
 DEVELOPMENT = True
 DEBUG = True
-IMG_ROOT = '.img'
+IMG_ROOT = 'img'
 
 app = Flask(__name__)
 CORS(app, support_credentials=True)
@@ -37,12 +37,14 @@ def get_infinite_images():
     """
     try:
         # Filter out system file e.g. .DS_store
-        jpegs = [x for x in os.listdir('/Users/mike/Code/PY/InfiniteScrollPhoto/img') if x[-3:] == 'jpg']
+        jpegs = [x for x in os.listdir(IMG_ROOT) if x[-3:] == 'jpg']
         app.logger.info(f"jpeg: {jpegs}")
         images = random.choices(jpegs, k=13)
         return jsonify({"msg": "Success", "image_names": images}), 200
     except FileNotFoundError:
         return jsonify({"msg": "Initial Loading failed", "url": []}), 400
+    except Exception as e:
+        return jsonify({"msg": f"Exception: {e}", "url": []})
 
 
 @app.route('/image/<filename>', methods=['GET'])
@@ -54,7 +56,7 @@ def get_single_image(filename):
     """
     try:
         app.logger.info(filename, IMG_ROOT)
-        return send_from_directory('img/', filename=filename, as_attachment=False)
+        return send_from_directory(IMG_ROOT + '/', filename=filename, as_attachment=False)
     except FileNotFoundError:
         abort(404)
 

@@ -1,21 +1,28 @@
-import os, random
-from flask import Flask, Response, abort, send_from_directory, jsonify
-from flask import send_file
+import os
+import random
+
+from flask import Flask, abort, send_from_directory, jsonify
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 IMG_ROOT = os.environ['IMG_ROOT']
+CORS(app, support_credentials=True)
 
 
 @app.route('/image/init', methods=['GET'])
+@cross_origin(supports_credentials=True)
 def initial_image_list():
     """
-    Randomly get 20 images to cool start
-    :return: 20 images url in {"msg": "Success", "urls": images} format
+    Randomly get initial images to cool start
+    :return: images url in {"msg": "Success", "urls": images} format
     """
     try:
-        images = random.choices(os.listdir('/Users/mike/Code/PY/InfiniteScrollPhoto/img'), k=20)
-        return jsonify({"msg": "Success", "urls": images}), 200
+        # filter out system file e.g. .DS_store
+        jpgs = [x for x in os.listdir('/Users/mike/Code/PY/InfiniteScrollPhoto/img') if x[-3:] == 'jpg']
+        print(jpgs)
+        images = random.choices(jpgs, k=13)
+        return jsonify({"msg": "Success", "image_names": images}), 200
     except FileNotFoundError:
         return jsonify({"msg": "Initial Loading failed", "url": []}), 400
 

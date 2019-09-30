@@ -1,45 +1,63 @@
 import os
 import random
-
 from flask import Flask, abort, send_from_directory, jsonify
 from flask_cors import CORS, cross_origin
+from logging.config import dictConfig
+
+dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'INFO',
+        'handlers': ['wsgi']
+    }
+})
+
+DEVELOPMENT = True
+DEBUG = True
+IMG_ROOT = '.img'
 
 app = Flask(__name__)
-app.config.from_object(os.environ['APP_SETTINGS'])
-IMG_ROOT = os.environ['IMG_ROOT']
 CORS(app, support_credentials=True)
 
 
-@app.route('/image/init', methods=['GET'])
+@app.route('/image/random', methods=['GET'])
 @cross_origin(supports_credentials=True)
-def initial_image_list():
+def get_infinite_images():
     """
-    Randomly get initial images to cool start
+    Randomly get initial images (k=13) to cool start
     :return: images url in {"msg": "Success", "urls": images} format
     """
     try:
-        # filter out system file e.g. .DS_store
-        jpgs = [x for x in os.listdir('/Users/mike/Code/PY/InfiniteScrollPhoto/img') if x[-3:] == 'jpg']
-        print(jpgs)
-        images = random.choices(jpgs, k=13)
+        # Filter out system file e.g. .DS_store
+        jpegs = [x for x in os.listdir('/Users/mike/Code/PY/InfiniteScrollPhoto/img') if x[-3:] == 'jpg']
+        app.logger.info(f"jpeg: {jpegs}")
+        images = random.choices(jpegs, k=13)
         return jsonify({"msg": "Success", "image_names": images}), 200
     except FileNotFoundError:
         return jsonify({"msg": "Initial Loading failed", "url": []}), 400
 
 
 @app.route('/image/<filename>', methods=['GET'])
-def get_image(filename):
+def get_single_image(filename):
     """
     Get a single image file by name. Like Pinterest api response 1 image per GET request.
     :param filename: Image file name
     :return: Image bytes from send_file()
     """
     try:
-        print(filename, IMG_ROOT)
+        app.logger.info(filename, IMG_ROOT)
         return send_from_directory('img/', filename=filename, as_attachment=False)
     except FileNotFoundError:
         abort(404)
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=5000)

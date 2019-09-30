@@ -1,13 +1,11 @@
 ## Setup
 
- - run in python 3.7 or your virtual environment
-
+ - Run in Python 3.7 or your virtual environment
+ - Flask 1.1.1 (latest) with Flask-cors installed
+ 
 cd InfiniteScrollPhoto
 pip install -r requirement.txt
-(chose y)
 python app.py
-
-## Run
 
 ## Requirement Analysis
 
@@ -28,3 +26,16 @@ It require to load images from database.
     
 4. Responsive by window:
     Adjust number of rows when browser window get smaller
+    
+## Anti-pattern Explanation:
+
+1. Why I don't use sqlite database to store image.
+   
+   It's not common in industry case, store image as binary file through database network will cause extra read work load.
+   
+   Better choice is to return with CDN prefix in url so that, CDN gateway can pick the closest server to load image.
+   
+   Each user would request 13 times for initial load, database can't easily scale for that (tps and network latency)
+   
+   Also, put ORM in flask for binary format is quite tedious and anti-pattern.
+   
